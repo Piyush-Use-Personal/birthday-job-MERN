@@ -11,7 +11,7 @@ const templates_17_01 = [{
 const templates = [...templates_17_01]
 
 const seedTemplates = async () => {
-    return await EmailTemplate.insertMany(templates)
+    return await EmailTemplate.insertUniqueMany(templates, 'name')
 }
 
 module.exports = {
