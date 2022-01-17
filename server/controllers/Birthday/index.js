@@ -2,13 +2,14 @@ const Responser = require("../../lib/Responser");
 const Birthday = require("../../config/database/mongoose/models/Birthday");
 const { NoDataAvailable } = require("../../lib/ErrorHandler");
 
-const saveBirthday = async (req, res) => {
+const saveBirthday = async (req, res, next) => {
     try {
-        const { name, email, dob } = req.body
+        const { name, email, dob, template } = req.body
         const birthday = new Birthday({
             name,
             email,
-            dob
+            dob,
+            template
         })
         await birthday.save()
         return Responser.success(
@@ -23,7 +24,7 @@ const saveBirthday = async (req, res) => {
     }
 }
 
-const getBirthday = async (req, res) => {
+const getBirthday = async (req, res, next) => {
     try {
         const data = await Birthday.find().lean()
         if (data.length) {

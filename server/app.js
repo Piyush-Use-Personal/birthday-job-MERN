@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const morganLogger = require('morgan');
 const compression = require('compression');
@@ -11,18 +12,13 @@ const indexRouter = require('./routes/index');
 
 const app = express();
 
-app.use(morganLogger(process.env.NODE_ENV));
+app.use(morganLogger(':method :url :status :res[content-length] - :response-time ms'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression()); //Compress all routes
 app.use(helmet());
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
-  next();
-});
+app.use(cors())
 app.use('/api', indexRouter);
 
 // catch 404 and forward to error handler

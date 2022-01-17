@@ -1,27 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import { Button } from '../style/button.style';
 import { CardContainer } from '../style/card.style';
 import { ColumnFill, Container } from '../style/layout.style';
 import { SpacerY } from '../style/spacer.style';
-import { TextBox } from '../style/textbox.style';
+import { TextBox, Select } from '../style/textbox.style';
 import { Subheading, Text } from '../style/typo.style';
-import { loginFormValidate } from '../util/validation';
-import { useHistory } from 'react-router';
+import { homeFormValidate } from '../util/validation';
+import useAxios from '../hooks/fetch';
 
-const Login: React.FC = () => {
-  const history = useHistory();
+const Home: React.FC = () => {
+  const {
+    post: {
+      failed: postFailed,
+      loading: postLoading,
+      success,
+      method: postMethod,
+    },
+    get: { method: getMethod, result: birthdays },
+  } = useAxios();
+
   const { handleSubmit, handleChange, values, errors } = useFormik({
+    validateOnChange: false,
+    validateOnBlur: false,
     initialValues: {
       email: '',
-      password: '',
+      name: '',
+      dob: '',
+      template: '',
     },
-    validate: loginFormValidate,
-    onSubmit: () => {
-      localStorage.setItem('login', 'true');
-      history.push('/home');
+    validate: homeFormValidate,
+    onSubmit: (input) => {
+      postMethod(`/birthday`, input);
     },
   });
+
+  useEffect(() => {
+    getMethod(`/template`, {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container>
@@ -29,7 +46,7 @@ const Login: React.FC = () => {
         <CardContainer width="500px">
           <form onSubmit={handleSubmit}>
             <SpacerY top={1} bottom={1}>
-              <Subheading color="primary">Login</Subheading>
+              <Subheading color="primary">Add birthday</Subheading>
             </SpacerY>
             <SpacerY top={1} bottom={1}>
               <TextBox
@@ -47,23 +64,54 @@ const Login: React.FC = () => {
             <SpacerY top={1} bottom={1}>
               <TextBox
                 color="fade"
-                placeholder="Password*"
-                type="password"
-                id="password"
-                name="password"
+                placeholder="Name of person*"
+                type="text"
+                id="name"
+                name="name"
                 onChange={handleChange}
-                value={values.password}
+                value={values.name}
                 stretch
               />
-              <Text color="danger">{errors.password}</Text>
+              <Text color="danger">{errors.name}</Text>
             </SpacerY>
-            <SpacerY top={0.4} bottom={0.4}>
-              <Text color="secondary">forget password?</Text>
+            <SpacerY top={1} bottom={1}>
+              <TextBox
+                color="fade"
+                placeholder="Date of birth of person*"
+                type="date"
+                id="dob"
+                name="dob"
+                onChange={handleChange}
+                value={values.dob}
+                stretch
+              />
+              <Text color="danger">{errors.dob}</Text>
+            </SpacerY>
+            <SpacerY top={1} bottom={1}>
+              <Select
+                stretch
+                color="fade"
+                onChange={handleChange}
+                name="template"
+                id="template"
+              >
+                <option value="">Select Template</option>
+                {birthdays.map(({ _id, name }: any) => (
+                  <option key={_id} value={_id}>
+                    {name}
+                  </option>
+                ))}
+              </Select>
+              <Text color="danger">{errors.template}</Text>
             </SpacerY>
             <SpacerY top={0.4} bottom={1}>
               <Button type="submit" color="secondary" stretch reverse>
-                Submit
+                {postLoading ? 'Loading...'
+                  : (success
+                  ? 'Saved and add more'
+                  : 'Submit')}
               </Button>
+              {postFailed && <Text color="danger">Something went wrong!</Text>}
             </SpacerY>
           </form>
         </CardContainer>
@@ -72,4 +120,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Home;

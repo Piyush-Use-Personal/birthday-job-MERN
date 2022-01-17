@@ -1,9 +1,11 @@
-interface loginFormProp {
+interface homeFormProp {
   email?: string;
-  password?: string;
+  name?: string;
+  dob?: string;
+  template?: string;
 }
-export const loginFormValidate: any = (values: any) => {
-  const errors: loginFormProp = {};
+export const homeFormValidate: any = (values: any) => {
+  const errors: homeFormProp = {};
 
   if (!values.email) {
     errors.email = 'email is required';
@@ -11,9 +13,16 @@ export const loginFormValidate: any = (values: any) => {
     errors.email = 'invalid email address';
   }
 
-  if (!values.password) {
-    errors.password = 'password is required!';
+  if (!values.name) {
+    errors.name = 'name is required!';
   }
 
+  if (!values.dob) {
+    errors.dob = 'date of birth is required!';
+  }
+
+  if (!values.template) {
+    errors.template = 'template is required!';
+  }
   return errors;
 };
