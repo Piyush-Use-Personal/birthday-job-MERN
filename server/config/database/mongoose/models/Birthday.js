@@ -23,6 +23,15 @@ const BirthdaySchema = new Schema({
     }
 }, { timestamps: true })
 
+BirthdaySchema.methods.isBirthDayToday = function(){
+    const date = new Date(this.dob)
+    const today = new Date()
+    if(date.getMonth() === today.getMonth() && date.getDate() === today.getDate()){
+        return true
+    }
+    return false
+}
+
 BirthdaySchema.statics.findNonCompleted = function(
     query = {}, 
     ...next
